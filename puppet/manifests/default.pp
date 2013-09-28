@@ -3,6 +3,7 @@ $apache_values = hiera('apache')
 $xdebug_values = hiera('xdebug')
 $mysql_values = hiera('mysql')
 $postgresql_values = hiera('postgresql')
+$redis_values = hiera('redis')
 
 group { 'puppet': ensure => present }
 Exec { path => [ '/bin/', '/sbin/', '/usr/bin/', '/usr/sbin/' ] }
@@ -37,8 +38,14 @@ if $php_values['install_php55'] {
   }
 }
 
-package { ['build-essential', 'vim-nox', 'curl', 'wget', 'git-core', 'python-pip' ]:
+package { ['build-essential', 'vim-nox', 'wget', 'git-core', 'python-pip', 'checkinstall' ]:
   ensure  => 'installed',
+}
+
+if !defined(Package['curl']) {
+  package { 'curl':
+    ensure => 'present',
+  }
 }
 
 exec { 'dotfiles':
@@ -186,4 +193,48 @@ define postgresql_server_db (
 
 create_resources(postgresql_server_db, $postgresql_values['dbs'])
 
+class { 'nodejs':
+  version      => 'v0.10.17',
+  make_install => false,
+  with_npm     => false,
+}
 
+define install_node_npm() {
+  wget::fetch { "npm-download-${node_version}":
+    source             => 'https://npmjs.org/install.sh',
+    nocheckcertificate => true,
+    destination        => '/tmp/install.sh',
+  }
+
+  exec { "npm-install-${node_version}":
+    command     => 'sh install.sh',
+    path        => '/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin',
+    cwd         => '/tmp',
+    user        => 'root',
+    environment => 'clean=yes',
+    unless      => 'which npm',
+    require     => [
+      Wget::Fetch["npm-download-${node_version}"],
+      Package['curl'],
+    ],
+  }
+
+  file { "${node_target_dir}/npm":
+    target  => '/usr/local/bin/npm',
+    ensure  => link,
+    require => Exec["npm-install-${node_version}"],
+  }
+}
+
+install_node_npm{ 'default':
+  require => Class['nodejs']
+}
+
+class { 'redis':
+  conf_port => $redis_values['conf_port'],
+  conf_bind => $redis_values['conf_bind'],
+}
+
+package { 'redis-commander':
+  provider => npm
+}

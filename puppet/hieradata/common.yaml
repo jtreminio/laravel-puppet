@@ -57,3 +57,7 @@ postgresql:
             user: totwell
             password: "123"
             grant: ALL
+
+redis:
+    conf_port: 6379
+    conf_bind: 127.0.0.1

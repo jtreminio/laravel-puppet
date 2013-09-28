@@ -34,3 +34,9 @@ mod "redis",
   :git => "git://github.com/fsalum/puppet-redis.git"
 
 mod "willdurand/nodejs"
+
+mod "beanstalkd",
+  :git => "git://github.com/Jimdo/puppet-beanstalkd.git"
+
+mod "git",
+  :git => "git://github.com/nesi/puppet-git.git"

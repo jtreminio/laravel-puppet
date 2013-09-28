@@ -61,3 +61,7 @@ postgresql:
 redis:
     conf_port: 6379
     conf_bind: 127.0.0.1
+
+beanstalkd:
+    listen_addr: '127.0.0.1'
+    listen_port: '11300'

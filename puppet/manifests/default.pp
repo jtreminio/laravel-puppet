@@ -4,6 +4,7 @@ $xdebug_values = hiera('xdebug')
 $mysql_values = hiera('mysql')
 $postgresql_values = hiera('postgresql')
 $redis_values = hiera('redis')
+$beanstalkd_values = hiera('beanstalkd')
 
 group { 'puppet': ensure => present }
 Exec { path => [ '/bin/', '/sbin/', '/usr/bin/', '/usr/sbin/' ] }
@@ -237,4 +238,24 @@ class { 'redis':
 
 package { 'redis-commander':
   provider => npm
+}
+
+class {'beanstalkd' :
+  listen_addr => $beanstalkd_values['listen_addr'],
+  listen_port => $beanstalkd_values['listen_port'],
+}
+
+git::repo{ 'beanstalk_console':
+  path    => '/var/www/beanstalk_console',
+  source  => 'git://github.com/ptrofimov/beanstalk_console.git',
+  require => Class['beanstalkd']
+}
+
+apache::vhost { 'beanstalk_console.dev':
+  servername    => 'beanstalk_console.dev',
+  serveraliases => ['www.beanstalk_console.dev',],
+  docroot       => '/var/www/beanstalk_console/public',
+  port          => '80',
+  override      => ['All',],
+  require => Git::Repo['beanstalk_console']
 }

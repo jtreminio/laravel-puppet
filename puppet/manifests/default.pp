@@ -259,3 +259,7 @@ apache::vhost { 'beanstalk_console.dev':
   override      => ['All',],
   require => Git::Repo['beanstalk_console']
 }
+
+package { 'grunt-cli':
+  provider => npm
+}

@@ -5,6 +5,7 @@ $mysql_values = hiera('mysql')
 $postgresql_values = hiera('postgresql')
 $redis_values = hiera('redis')
 $beanstalkd_values = hiera('beanstalkd')
+$laravel_values = hiera('laravel')
 
 group { 'puppet': ensure => present }
 Exec { path => [ '/bin/', '/sbin/', '/usr/bin/', '/usr/sbin/' ] }
@@ -263,3 +264,16 @@ apache::vhost { 'beanstalk_console.dev':
 package { 'grunt-cli':
   provider => npm
 }
+
+define install_site_with_composer (
+  $target
+) {
+  $project_name = $name
+
+  composer::run { $project_name:
+    path => $target,
+    command => "create-project laravel/laravel ${project_name} --prefer-dist --working-dir ${target}",
+  }
+}
+
+create_resources(install_site_with_composer, $laravel_values)

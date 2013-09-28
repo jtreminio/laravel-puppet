@@ -40,3 +40,6 @@ mod "beanstalkd",
 
 mod "git",
   :git => "git://github.com/nesi/puppet-git.git"
+
+mod "composer",
+  :git => "git://github.com/puphpet/puphpet-composer.git"

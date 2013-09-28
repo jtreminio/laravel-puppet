@@ -1,4 +1,8 @@
 ---
+laravel:
+    laravel.dev: # project name
+        target: '/var/www'
+
 php:
     install_php55: true # defaults to 5.4
     install_pear: true

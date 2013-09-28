@@ -160,3 +160,30 @@ class { 'mysql::server':
 
 create_resources(mysql::db, $mysql_values['dbs'])
 
+class { 'postgresql::server': }
+
+define postgresql_server_db (
+  $user,
+  $password,
+  $encoding   = $postgresql::server::encoding,
+  $locale     = $postgresql::server::locale,
+  $grant      = 'ALL',
+  $tablespace = undef,
+  $istemplate = false
+) {
+  $dbname = $name
+
+  postgresql::server::db{ 'laravel4':
+    user       => $user,
+    password   => postgresql_password($password, $dbname),
+    encoding   => $encoding,
+    locale     => $locale,
+    grant      => $grant,
+    tablespace => $tablespace,
+    istemplate => $istemplate
+  }
+}
+
+create_resources(postgresql_server_db, $postgresql_values['dbs'])
+
+

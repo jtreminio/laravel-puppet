@@ -54,5 +54,6 @@ postgresql:
     dbs:
         laravel4:
             name: laravel4
-            owner: totwell
+            user: totwell
             password: "123"
+            grant: ALL

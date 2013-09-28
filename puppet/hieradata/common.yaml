@@ -1,0 +1,58 @@
+---
+php:
+    install_php55: true # defaults to 5.4
+    install_pear: true
+    mods:
+        - php5-apcu
+        - php5-cli
+        - php5-curl
+        - php5-intl
+        - php5-mcrypt
+        - php5-memcached
+        - php5-mysql
+    pecl_mods: # do not choose xdebug here
+        - pecl_http
+    ini:
+        - 'date.timezone = "America/Chicago"'
+        - 'display_errors = On'
+        - 'error_reporting = -1'
+
+apache:
+    servername: laravel-vm
+    mods:
+        - rewrite
+        - php
+    vhosts:
+        laravel.dev:
+            servername: laravel.dev
+            serveraliases:
+                - www.laravel.dev
+            docroot: /var/www/laravel.dev
+            port: 80
+
+xdebug:
+    default_enable: 1
+    remote_autostart: 1
+    remote_connect_back: 1
+    remote_enable: 1
+    remote_handler: dbgp
+    remote_port: 9000
+
+mysql:
+    root_password: "123"
+    dbs:
+        laravel4:
+            name: laravel4
+            grant:
+                - ALL
+            user: totwell
+            password: "123"
+            host: localhost
+            charset: utf8
+
+postgresql:
+    dbs:
+        laravel4:
+            name: laravel4
+            owner: totwell
+            password: "123"

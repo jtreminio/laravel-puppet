@@ -27,11 +27,11 @@ apache:
         - rewrite
         - php
     vhosts:
-        laravel.dev:
+        laravel.dev: # must match with laravel hash
             servername: laravel.dev
             serveraliases:
                 - www.laravel.dev
-            docroot: /var/www/laravel.dev
+            docroot: /var/www/laravel.dev/public
             port: 80
 
 xdebug:

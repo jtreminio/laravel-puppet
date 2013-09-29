@@ -70,8 +70,6 @@ class { 'apache':
   ],
 }
 
-create_resources(apache::vhost, $apache_values['vhosts'])
-
 define apache_mod {
   class { "apache::mod::${name}": }
 }
@@ -117,7 +115,7 @@ class { 'xdebug':
 }
 
 puphpet::ini { 'xdebug':
-  value   => $xdebug_values,
+  value   => join_keys_to_values($xdebug_values, ': '),
   ini     => '/etc/php5/mods-available/zzz_xdebug.ini',
   notify  => Service['httpd'],
   require => Class['php'],
@@ -258,7 +256,7 @@ apache::vhost { 'beanstalk_console.dev':
   docroot       => '/var/www/beanstalk_console/public',
   port          => '80',
   override      => ['All',],
-  require => Git::Repo['beanstalk_console']
+  require       => Git::Repo['beanstalk_console']
 }
 
 package { 'grunt-cli':
@@ -270,10 +268,16 @@ define install_site_with_composer (
 ) {
   $project_name = $name
 
-  composer::run { $project_name:
-    path => $target,
-    command => "create-project laravel/laravel ${project_name} --prefer-dist --working-dir ${target}",
+  exec { "composer create-project laravel/laravel ${project_name} --prefer-dist --working-dir ${target}":
+    path        => ['/usr/local/bin', '/usr/bin', '/bin'],
+    environment => "COMPOSER_HOME=/usr/local/bin",
+    cwd         => '/var/www',
+    creates     => "${target}/${name}",
+    require     => [Package['php'], Class['composer']],
+    before      => Apache::Vhost[$project_name],
   }
+
+  create_resources(apache::vhost, $apache_values['vhosts'])
 }
 
 create_resources(install_site_with_composer, $laravel_values)

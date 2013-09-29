@@ -1,3 +1,8 @@
+Made by Juan Treminio over a few hour period. The Vagrantfile is about 5x as large as I would like it,
+but it works for what it's made for.
+
+If you want to make your own box, go to my other project, [https://puphpet.com](PuPHPet).
+
 Quick box to meet Taylor Otwell's requirements:
 
 Vagrant Box:

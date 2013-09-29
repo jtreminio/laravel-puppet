@@ -13,6 +13,10 @@ Vagrant.configure("2") do |config|
     v.customize ["setextradata", :id, "VBoxInternal2/SharedFoldersEnableSymlinksCreate/v-root", "1"]
   end
 
+  # uncomment the following and change to what you want to share
+  # first folder is LOCAL to master, second is inside the VM
+  #config.vm.synced_folder "~/www/", "/var/www", id: "vagrant-root" , :nfs => true
+
   config.vm.provision :shell, :path   => "shell/librarian-puppet-vagrant.sh"
   config.vm.provision :shell, :inline =>
     "if [[ ! -f /apt-get-run ]]; then sudo apt-get update && touch /apt-get-run; fi"
